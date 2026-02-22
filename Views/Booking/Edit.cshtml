@@ -1,0 +1,97 @@
+﻿@model EventEase.Models.Booking
+
+@{
+    ViewData["Title"] = "Edit Booking";
+}
+
+<section class="max-w-3xl mx-auto py-16">
+
+    <div class="mb-10">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+            Edit Booking
+        </h1>
+        <p class="text-gray-500">
+            Update the booking information below.
+        </p>
+    </div>
+
+    <div class="bg-white shadow-xl rounded-2xl p-8">
+
+        <form asp-action="Edit" class="space-y-6">
+
+            <input type="hidden" asp-for="BookingId" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-red-500 text-sm"></div>
+
+            <!-- Venue Dropdown (FIXED) -->
+            <div>
+                <label asp-for="VenueId"
+                       class="block text-sm font-semibold text-gray-700 mb-2"></label>
+
+                <select asp-for="VenueId"
+                        asp-items="ViewBag.VenueId"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3
+                               focus:ring-2 focus:ring-indigo-500
+                               focus:border-indigo-500 outline-none transition">
+                </select>
+
+                <span asp-validation-for="VenueId"
+                      class="text-red-500 text-sm mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="EventId"
+                       class="block text-sm font-semibold text-gray-700 mb-2"></label>
+
+                <select asp-for="EventId"
+                        asp-items="ViewBag.EventId"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3
+                   focus:ring-2 focus:ring-indigo-500
+                   focus:border-indigo-500 outline-none transition">
+                </select>
+
+                <span asp-validation-for="EventId"
+                      class="text-red-500 text-sm mt-1 block"></span>
+            </div>
+
+            <!-- Booking Date -->
+            <div>
+                <label asp-for="BookingDate"
+                       class="block text-sm font-semibold text-gray-700 mb-2"></label>
+
+                <input asp-for="BookingDate"
+                       class="w-full border border-gray-300 rounded-xl px-4 py-3
+                              focus:ring-2 focus:ring-indigo-500
+                              focus:border-indigo-500 outline-none transition" />
+
+                <span asp-validation-for="BookingDate"
+                      class="text-red-500 text-sm mt-1 block"></span>
+            </div>
+
+            <div class="flex justify-between items-center pt-6 border-t">
+
+                <a asp-action="Index"
+                   class="text-gray-600 hover:text-gray-800 font-medium transition">
+                    ← Back to List
+                </a>
+
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-3 rounded-xl
+                               shadow-md hover:bg-indigo-700 transition font-semibold">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

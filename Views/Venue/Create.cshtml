@@ -1,0 +1,53 @@
+﻿@model EventEase.Models.Venue
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create Venue";
+}
+
+<section class="max-w-3xl mx-auto py-12">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8">
+
+        <h1 class="text-2xl font-bold mb-6">Create Venue</h1>
+
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="space-y-6">
+
+            <div>
+                <label asp-for="VenueName" class="block text-sm font-semibold mb-2"></label>
+                <input asp-for="VenueName" class="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+                <label asp-for="Location" class="block text-sm font-semibold mb-2"></label>
+                <input asp-for="Location" class="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-2">Venue Image</label>
+                <input type="file" name="image"
+                       class="w-full border rounded-xl px-4 py-2 bg-gray-50" />
+            </div>
+
+            <div>
+                <label asp-for="Capacity" class="block text-sm font-semibold mb-2"></label>
+                <input asp-for="Capacity" class="w-full border rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div class="flex items-center gap-3">
+                <input asp-for="IsAvailable" class="h-4 w-4 text-indigo-600" />
+                <label asp-for="IsAvailable" class="text-sm font-medium"></label>
+            </div>
+
+            <div class="flex justify-between pt-6 border-t">
+                <a asp-action="Index" class="text-gray-600">Cancel</a>
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-2 rounded-xl hover:bg-indigo-700 transition font-semibold">
+                    Create Venue
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</section>

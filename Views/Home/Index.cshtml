@@ -1,0 +1,74 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Home Page";
+}
+
+<section class="relative overflow-hidden">
+
+    <!-- Background Gradient -->
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-indigo-100"></div>
+
+    <div class="relative max-w-6xl mx-auto text-center py-24 px-6">
+
+        <!-- Badge -->
+        <span class="inline-block bg-indigo-100 text-indigo-600 text-sm font-semibold px-4 py-2 rounded-full mb-6 shadow-sm">
+            Event Management Platform
+        </span>
+
+        <!-- Main Heading -->
+        <h1 class="text-5xl md:text-6xl font-extrabold text-gray-800 mb-6 tracking-tight leading-tight">
+            Welcome to <span class="text-indigo-600">EventEase</span>
+        </h1>
+
+        <!-- Subheading -->
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
+            Simplify your event planning, manage venues, and handle bookings
+            with a seamless and modern experience.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex justify-center gap-6 flex-wrap">
+
+            <a asp-controller="Event" asp-action="Index"
+               class="bg-indigo-600 text-white px-8 py-3 rounded-xl shadow-lg
+                      hover:bg-indigo-700 hover:shadow-xl transition font-semibold">
+                View Events
+            </a>
+
+            <a asp-controller="Booking" asp-action="Index"
+               class="bg-white border border-gray-300 text-gray-700 px-8 py-3 rounded-xl
+                      shadow-sm hover:bg-gray-50 hover:shadow-md transition font-semibold">
+                Manage Bookings
+            </a>
+
+        </div>
+
+        <!-- Feature Highlights -->
+        <div class="grid md:grid-cols-3 gap-8 mt-20 text-left">
+
+            <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+                <h3 class="font-semibold text-gray-800 mb-2">Create Events</h3>
+                <p class="text-gray-600 text-sm">
+                    Organize conferences, workshops, festivals, and more.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+                <h3 class="font-semibold text-gray-800 mb-2">Manage Venues</h3>
+                <p class="text-gray-600 text-sm">
+                    Track capacity, availability, and location details.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+                <h3 class="font-semibold text-gray-800 mb-2">Smart Bookings</h3>
+                <p class="text-gray-600 text-sm">
+                    Filter and monitor event bookings effortlessly.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

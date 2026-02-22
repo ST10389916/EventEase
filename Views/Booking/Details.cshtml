@@ -1,0 +1,60 @@
+﻿@model EventEase.Models.Booking
+
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<section class="max-w-3xl mx-auto py-16">
+
+    <div class="mb-10">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+            Booking Details
+        </h1>
+        <p class="text-gray-500">
+            View detailed information about this booking.
+        </p>
+    </div>
+
+    <div class="bg-white shadow-xl rounded-2xl p-8">
+
+        <div class="grid grid-cols-2 gap-8">
+
+            <!-- FIXED Venue Display -->
+            <div>
+                <p class="text-sm text-gray-500 font-medium">
+                    Venue
+                </p>
+                <p class="text-lg font-semibold text-gray-800 mt-1">
+                    @Model.Venue?.VenueName
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 font-medium">
+                    Booking Date
+                </p>
+                <p class="text-lg font-semibold text-gray-800 mt-1">
+                    @Model.BookingDate.ToShortDateString()
+                </p>
+            </div>
+
+        </div>
+
+        <div class="flex justify-between items-center mt-10 pt-6 border-t">
+
+            <a asp-action="Index"
+               class="text-gray-600 hover:text-gray-800 font-medium transition">
+                ← Back to List
+            </a>
+
+            <a asp-action="Edit" asp-route-id="@Model?.BookingId"
+               class="bg-indigo-600 text-white px-6 py-3 rounded-xl
+                      shadow-md hover:bg-indigo-700 transition font-semibold">
+                Edit Booking
+            </a>
+
+        </div>
+
+    </div>
+
+</section>

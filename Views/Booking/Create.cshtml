@@ -1,0 +1,71 @@
+﻿@using EventEase.Models
+@model Booking
+
+@{
+    ViewData["Title"] = "Create Booking";
+}
+
+<section class="max-w-3xl mx-auto py-16">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8">
+
+        <form asp-action="Create" method="post" class="space-y-6">
+
+            <div>
+                <label asp-for="BookingDate"
+                       class="block text-sm font-semibold text-gray-700 mb-2"></label>
+
+                <input asp-for="BookingDate"
+                       class="w-full border border-gray-300 rounded-xl px-4 py-3
+                              focus:ring-2 focus:ring-indigo-500" />
+
+                <span asp-validation-for="BookingDate"
+                      class="text-red-500 text-sm mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="VenueId"
+                       class="block text-sm font-semibold text-gray-700 mb-2"></label>
+
+                <select asp-for="VenueId"
+                        asp-items="ViewBag.VenueId"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3
+                               focus:ring-2 focus:ring-indigo-500">
+                </select>
+
+                <span asp-validation-for="VenueId"
+                      class="text-red-500 text-sm mt-1 block"></span>
+            </div>
+
+            <div>
+                <label asp-for="EventId"
+                       class="block text-sm font-semibold text-gray-700 mb-2"></label>
+
+                <select asp-for="EventId"
+                        asp-items="ViewBag.EventId"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3
+                               focus:ring-2 focus:ring-indigo-500">
+                </select>
+
+                <span asp-validation-for="EventId"
+                      class="text-red-500 text-sm mt-1 block"></span>
+            </div>
+
+            <div class="flex justify-between pt-6 border-t">
+                <a asp-action="Index"
+                   class="text-gray-600 hover:text-gray-800 font-medium">
+                    ← Back
+                </a>
+
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-6 py-3 rounded-xl
+                               hover:bg-indigo-700 transition font-semibold">
+                    Save Booking
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</section>

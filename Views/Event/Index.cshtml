@@ -1,0 +1,112 @@
+﻿@using EventEase.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<Event>
+
+@{
+    ViewData["Title"] = "Events";
+}
+
+<section class="max-w-7xl mx-auto py-12">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-10">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">
+                Events
+            </h1>
+            <p class="text-gray-500">
+                Manage and view all created events.
+            </p>
+        </div>
+
+        <div class="flex gap-3">
+            <a asp-action="Create"
+               class="bg-indigo-600 text-white px-5 py-2 rounded-xl shadow hover:bg-indigo-700 transition font-semibold">
+                + Create Event
+            </a>
+
+            <a asp-controller="Booking" asp-action="Index"
+               class="bg-gray-200 text-gray-700 px-5 py-2 rounded-xl hover:bg-gray-300 transition font-semibold">
+                Check Bookings
+            </a>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+
+                <!-- Table Header -->
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Event</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Description</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Type</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+                        <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+
+                <!-- Table Body -->
+                <tbody class="divide-y divide-gray-200 bg-white">
+
+                    @foreach (var e in Model)
+                    {
+                        <tr class="hover:bg-gray-50 transition">
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @e.EventId
+                            </td>
+
+                            <td class="px-6 py-4 text-sm font-semibold text-gray-800">
+                                @e.EventName
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @e.Description
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @e.EventType?.Name
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @e.EventDate.ToShortDateString()
+                            </td>
+
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end items-center gap-2 whitespace-nowrap">
+
+                                    <a href="/Event/Details/@e.EventId"
+                                       class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm font-medium hover:bg-blue-200 transition">
+                                        Details
+                                    </a>
+
+                                    <a href="/Event/Edit/@e.EventId"
+                                       class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-lg text-sm font-medium hover:bg-yellow-200 transition">
+                                        Edit
+                                    </a>
+
+                                    <a href="/Event/Delete/@e.EventId"
+                                       class="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-sm font-medium hover:bg-red-200 transition">
+                                        Delete
+                                    </a>
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</section>

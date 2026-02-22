@@ -1,0 +1,54 @@
+﻿@model EventEase.Models.Event
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Delete Event";
+}
+
+<section class="max-w-2xl mx-auto py-12">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8 border border-red-100">
+
+        <h1 class="text-2xl font-bold text-red-600 mb-4">
+            Delete Event
+        </h1>
+
+        <p class="text-gray-600 mb-6">
+            Are you sure you want to delete this event?
+        </p>
+
+        <div class="bg-gray-50 p-6 rounded-xl mb-6 space-y-3">
+
+            <div>
+                <p class="text-sm text-gray-500">Name</p>
+                <p class="font-semibold text-gray-800">@Model.EventName</p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500">Date</p>
+                <p class="font-semibold text-gray-800">@Model.EventDate.ToShortDateString()</p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500">Type</p>
+                <p class="font-semibold text-gray-800">@Model.EventType?.Name</p>
+            </div>
+
+        </div>
+
+        <form asp-action="Delete" class="flex justify-between">
+            <input type="hidden" asp-for="EventId" />
+
+            <a asp-action="Index"
+               class="text-gray-600 hover:text-gray-800 font-medium">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="bg-red-600 text-white px-6 py-2 rounded-xl shadow hover:bg-red-700 transition font-semibold">
+                Delete
+            </button>
+        </form>
+
+    </div>
+
+</section>

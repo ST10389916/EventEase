@@ -1,0 +1,178 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model IEnumerable<EventEase.Models.BookingDetailView>
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="max-w-7xl mx-auto py-12">
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+            Event Management
+        </h1>
+        <p class="text-gray-500">
+            Search and filter bookings below.
+        </p>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="bg-white shadow-xl rounded-2xl p-6 mb-10">
+
+        <form asp-action="Index" method="get" class="grid grid-cols-1 md:grid-cols-5 gap-6">
+
+            <!-- Event Type -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Event Type
+                </label>
+                <select name="eventTypeId"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500">
+                    <option value="">All</option>
+                    @foreach (var eventType in ViewBag.EventTypes)
+                    {
+                        <option value="@eventType.Value">@eventType.Text</option>
+                    }
+                </select>
+            </div>
+
+            <!-- From -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    From
+                </label>
+                <input type="date"
+                       name="startDate"
+                       value="@ViewBag.StartDate"
+                       class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <!-- To -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    To
+                </label>
+                <input type="date"
+                       name="endDate"
+                       value="@ViewBag.EndDate"
+                       class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <!-- Availability -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Availability
+                </label>
+                <select name="isAvailable"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500">
+                    <option value="">All</option>
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-end gap-3">
+                <button type="submit"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow hover:bg-indigo-700 transition">
+                    Search
+                </button>
+                <a asp-action="Index"
+                   class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-300 transition">
+                    Clear
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Booking Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Event Date</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Event</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Description</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Type</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Venue</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Location</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Capacity</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Available</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Image</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200 bg-white">
+
+                    @foreach (var item in Model)
+                    {
+                        <tr class="hover:bg-gray-50 transition">
+
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                @item.BookingDate.ToShortDateString()
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-700">
+                                @item.EventDate.ToShortDateString()
+                            </td>
+
+                            <td class="px-6 py-4 text-sm font-medium text-gray-800">
+                                @item.EventName
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @item.EventDescription
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @item.EventTypeName
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-800">
+                                @item.VenueName
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @item.Location
+                            </td>
+
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                @item.Capacity
+                            </td>
+
+                            <td class="px-6 py-4 text-sm">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                        @(item.IsAvailable ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")">
+                                    @(item.IsAvailable ? "Available" : "Unavailable")
+                                </span>
+                            </td>
+
+                            <td class="px-6 py-4">
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl"
+                                         alt="Venue Image"
+                                         class="w-20 h-14 object-cover rounded-lg shadow" />
+                                }
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</section>
