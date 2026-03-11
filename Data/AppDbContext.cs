@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace EventEase.Data
 {
     public class AppDbContext : DbContext
-        {
+    {
         public AppDbContext(DbContextOptions<DbContext> options) : base(options) { }
 
         public AppDbContext(DbContextOptions options) : base(options)
@@ -22,8 +22,17 @@ namespace EventEase.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<BookingDetailView>()
-               .HasNoKey()
-               .ToView("View_BookingsDetails");
+              .HasNoKey()
+              .ToView("View_BookingsDetails");
+
+            //modelBuilder.Entity<Booking>()
+            //    .HasIndex(b => new { b.VenueId, b.EventDate })
+            //    .IsUnique();
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.Venue)
+                .WithMany()
+                .HasForeignKey(e => e.VenueId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Venue)
@@ -33,15 +42,14 @@ namespace EventEase.Data
 
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Event)
-                .WithMany()
+                .WithMany(e => e.Bookings)
                 .HasForeignKey(b => b.EventId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Event>()
-             .HasOne(e => e.EventType)
-             .WithMany()
-             .HasForeignKey(e => e.EventTypeId)
-             .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(e => e.EventType)
+                .WithMany(t => t.Events)
+                .HasForeignKey(e => e.EventTypeId);
 
         }
 

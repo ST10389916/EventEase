@@ -14,116 +14,183 @@ namespace EventEase.Controllers
         {
             _context = context;
         }
-            // GET: Event
-            public async Task<IActionResult> Index()
+
+        // =============================
+        // GET: Event
+        // =============================
+        public async Task<IActionResult> Index()
+        {
+            var events = _context.Events
+                .Include(e => e.EventType)
+                .Include(e => e.Venue);
+
+            return View(await events.ToListAsync());
+        }
+
+        // =============================
+        // GET: Event/Details/5
+        // =============================
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var eventItem = await _context.Events
+                .Include(e => e.EventType)
+                .Include(e => e.Venue)
+                .FirstOrDefaultAsync(m => m.EventId == id);
+
+            if (eventItem == null) return NotFound();
+
+            return View(eventItem);
+        }
+
+        // =============================
+        // GET: Event/Create
+        // =============================
+        public IActionResult Create()
+        {
+            ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "EventTypeId", "Name");
+            ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName");
+            return View();
+        }
+
+        // =============================
+        // POST: Event/Create
+        // =============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Event eventItem)
+        {
+            bool venueConflict = await _context.Events
+                .AnyAsync(e =>
+                    e.VenueId == eventItem.VenueId &&
+                    e.EventDate.Value.Date == eventItem.EventDate.Value.Date);
+
+            if (venueConflict)
             {
-                var events = _context.Events.Include(e => e.EventType);
-                return View(await events.ToListAsync());
+                ModelState.AddModelError("EventDate",
+                    "This venue already has an event scheduled on this date.");
             }
 
-            // GET: Event/Details/5
-            public async Task<IActionResult> Details(int? id)
+            if (!ModelState.IsValid)
             {
-                if (id == null) return NotFound();
-
-                var eventItem = await _context.Events
-                    .Include(e => e.EventType)
-                    .FirstOrDefaultAsync(m => m.EventId == id);
-                if (eventItem == null) return NotFound();
-
-                return View(eventItem);
-            }
-
-            // GET: Event/Create
-            public IActionResult Create()
-            {
-                ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "EventTypeId", "Name");
-                return View();
-            }
-
-            // POST: Event/Create
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("EventId,EventName,Description,EventDate,EventTypeId")] Event eventItem)
-            {
-                if (ModelState.IsValid)
-                {
-                    _context.Add(eventItem);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
                 ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "EventTypeId", "Name", eventItem.EventTypeId);
+                ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName", eventItem.VenueId);
                 return View(eventItem);
             }
 
-            // GET: Event/Edit/5
-            public async Task<IActionResult> Edit(int? id)
+            _context.Add(eventItem);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Event created successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =============================
+        // GET: Event/Edit/5
+        // =============================
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var eventItem = await _context.Events.FindAsync(id);
+            if (eventItem == null) return NotFound();
+
+            ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "EventTypeId", "Name", eventItem.EventTypeId);
+            ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName", eventItem.VenueId);
+
+            return View(eventItem);
+        }
+
+        // =============================
+        // POST: Event/Edit/5
+        // =============================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Event eventItem)
+        {
+            if (id != eventItem.EventId)
+                return NotFound();
+
+            bool venueConflict = await _context.Events
+                .AnyAsync(e =>
+                    e.EventId != eventItem.EventId &&
+                    e.VenueId == eventItem.VenueId &&
+                    e.EventDate.Value.Date == eventItem.EventDate.Value.Date);
+
+            if (venueConflict)
             {
-                if (id == null) return NotFound();
+                ModelState.AddModelError("EventDate",
+                    "This venue already has another event scheduled on this date.");
+            }
 
-                var eventItem = await _context.Events.FindAsync(id);
-                if (eventItem == null) return NotFound();
-
+            if (!ModelState.IsValid)
+            {
                 ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "EventTypeId", "Name", eventItem.EventTypeId);
+                ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName", eventItem.VenueId);
                 return View(eventItem);
             }
 
-            // POST: Event/Edit/5
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind("EventId,EventName,Description,EventDate,EventTypeId")] Event eventItem)
+            try
             {
-                if (id != eventItem.EventId) return NotFound();
-
-                if (ModelState.IsValid)
-                {
-                    try
-                    {
-                        _context.Update(eventItem);
-                        await _context.SaveChangesAsync();
-                    }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        if (!EventExists(eventItem.EventId)) return NotFound();
-                        else throw;
-                    }
-                    return RedirectToAction(nameof(Index));
-                }
-                ViewData["EventTypeId"] = new SelectList(_context.EventTypes, "EventTypeId", "Name", eventItem.EventTypeId);
-                return View(eventItem);
+                _context.Update(eventItem);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Events.Any(e => e.EventId == eventItem.EventId))
+                    return NotFound();
+                else
+                    throw;
             }
 
-            // GET: Event/Delete/5
-            public async Task<IActionResult> Delete(int? id)
+            TempData["SuccessMessage"] = "Event updated successfully.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // =============================
+        // GET: Event/Delete/5
+        // =============================
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var eventItem = await _context.Events
+                .Include(e => e.EventType)
+                .Include(e => e.Venue)
+                .FirstOrDefaultAsync(m => m.EventId == id);
+
+            if (eventItem == null) return NotFound();
+
+            return View(eventItem);
+        }
+
+        // =============================
+        // POST: Event/Delete/5
+        // =============================
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var eventItem = await _context.Events.FindAsync(id);
+            if (eventItem == null)
+                return NotFound();
+
+            bool hasBookings = await _context.Bookings
+                .AnyAsync(b => b.EventId == id);
+
+            if (hasBookings)
             {
-                if (id == null) return NotFound();
-
-                var eventItem = await _context.Events
-                    .Include(e => e.EventType)
-                    .FirstOrDefaultAsync(m => m.EventId == id);
-                if (eventItem == null) return NotFound();
-
-                return View(eventItem);
-            }
-
-            // POST: Event/Delete/5
-            [HttpPost, ActionName("Delete")]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> DeleteConfirmed(int id)
-            {
-                var eventItem = await _context.Events.FindAsync(id);
-                if (eventItem != null)
-                {
-                    _context.Events.Remove(eventItem);
-                    await _context.SaveChangesAsync();
-                }
+                TempData["ErrorMessage"] =
+                    "Cannot delete this event because it has associated bookings.";
                 return RedirectToAction(nameof(Index));
             }
 
-            private bool EventExists(int id)
-            {
-                return _context.Events.Any(e => e.EventId == id);
-            }
+            _context.Events.Remove(eventItem);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Event deleted successfully.";
+            return RedirectToAction(nameof(Index));
         }
     }
-
+}

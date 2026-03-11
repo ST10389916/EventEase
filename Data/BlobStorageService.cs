@@ -1,6 +1,5 @@
 ﻿using Azure.Storage.Blobs;
 
-
 namespace EventEaseWebApp.Data
 {
     public class BlobService

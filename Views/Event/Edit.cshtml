@@ -16,7 +16,16 @@
             <input type="hidden" asp-for="EventId" />
 
             <div>
-                <label asp-for="EventName" class="block text-sm font-semibold text-gray-700 mb-2"></label>
+                <label  class="block text-sm font-semibold text-gray-700 mb-2">Venue</label>
+                <select asp-for="VenueId"
+                        asp-items="ViewBag.VenueId"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500">
+                </select>
+                <span asp-validation-for="VenueId" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div>
+                <label  class="block text-sm font-semibold text-gray-700 mb-2">Event Name</label>
                 <input asp-for="EventName"
                        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
                 <span asp-validation-for="EventName" class="text-red-500 text-sm"></span>
@@ -30,14 +39,14 @@
             </div>
 
             <div>
-                <label asp-for="EventDate" class="block text-sm font-semibold text-gray-700 mb-2"></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"> EventDate</label>
                 <input asp-for="EventDate" type="date"
                        class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500" />
                 <span asp-validation-for="EventDate" class="text-red-500 text-sm"></span>
             </div>
 
             <div>
-                <label asp-for="EventTypeId" class="block text-sm font-semibold text-gray-700 mb-2"></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-2"> Event Type</label>
                 <select asp-for="EventTypeId"
                         asp-items="ViewBag.EventTypeId"
                         class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-indigo-500">

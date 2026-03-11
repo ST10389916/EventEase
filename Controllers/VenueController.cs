@@ -11,11 +11,14 @@ namespace EventEase.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
-        public VenueController(AppDbContext context, IConfiguration configuration)
+        public VenueController(AppDbContext context, IConfiguration configuration, IWebHostEnvironment environment)
         {
             _context = context;
             _configuration = configuration;
+            _environment = environment;
+
         }
 
         public async Task<IActionResult> Index()
@@ -30,37 +33,68 @@ namespace EventEase.Controllers
             if (venue == null) return NotFound();
             return View(venue);
         }
-       
+
 
         public IActionResult Create() => View();
 
         [HttpPost]
         public async Task<IActionResult> Create(Venue venue, IFormFile image)
         {
+            //if (ModelState.IsValid)
+            //{
+            //if (image != null && image.Length > 0)
+            //{
+            //    var containerName = _configuration["AzureStorage:ContainerName"];
+            //    var blobConnectionString = _configuration["AzureStorage:ConnectionString"];
+            //    var blobServiceClient = new BlobServiceClient(blobConnectionString);
+            //    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            //    await containerClient.CreateIfNotExistsAsync();
+
+            //    var blobClient = containerClient.GetBlobClient(Guid.NewGuid() + Path.GetExtension(image.FileName));
+            //    using (var stream = image.OpenReadStream())
+            //    {
+            //        await blobClient.UploadAsync(stream, overwrite: true);
+            //    }
+
+            //    venue.ImageUrl = blobClient.Uri.ToString();
+            //}
+
+
             if (ModelState.IsValid)
             {
+
                 if (image != null && image.Length > 0)
                 {
-                    var containerName = _configuration["AzureStorage:ContainerName"];
-                    var blobConnectionString = _configuration["AzureStorage:ConnectionString"];
-                    var blobServiceClient = new BlobServiceClient(blobConnectionString);
-                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                    await containerClient.CreateIfNotExistsAsync();
-
-                    var blobClient = containerClient.GetBlobClient(Guid.NewGuid() + Path.GetExtension(image.FileName));
-                    using (var stream = image.OpenReadStream())
+                    // Ensure Images folder exists
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "Images");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        await blobClient.UploadAsync(stream, overwrite: true);
+                        Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    venue.ImageUrl = blobClient.Uri.ToString();
+                    // Generate unique file name
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    // Save file to wwwroot/Images
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    // Save relative path to database
+                    venue.ImageUrl = "/Images/" + fileName;
                 }
+
 
                 _context.Add(venue);
                 await _context.SaveChangesAsync();
+                //return View(venue);
                 return RedirectToAction(nameof(Index));
+                //}
             }
             return View(venue);
+
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -75,29 +109,54 @@ namespace EventEase.Controllers
         {
             if (id != venue.VenueId) return NotFound();
 
+            //if (ModelState.IsValid)
+            //{
+            //if (image != null && image.Length > 0)
+            //{
+            //    var containerName = _configuration["AzureStorage:ContainerName"];
+            //    var blobConnectionString = _configuration["AzureStorage:ConnectionString"];
+            //    var blobServiceClient = new BlobServiceClient(blobConnectionString);
+            //    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+            //    await containerClient.CreateIfNotExistsAsync();
+
+            //    var blobClient = containerClient.GetBlobClient(Guid.NewGuid() + Path.GetExtension(image.FileName));
+            //    using (var stream = image.OpenReadStream())
+            //    {
+            //        await blobClient.UploadAsync(stream, overwrite: true);
+            //    }
+
+            //    venue.ImageUrl = blobClient.Uri.ToString();
+            //}
             if (ModelState.IsValid)
             {
                 if (image != null && image.Length > 0)
                 {
-                    var containerName = _configuration["AzureStorage:ContainerName"];
-                    var blobConnectionString = _configuration["AzureStorage:ConnectionString"];
-                    var blobServiceClient = new BlobServiceClient(blobConnectionString);
-                    var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-                    await containerClient.CreateIfNotExistsAsync();
-
-                    var blobClient = containerClient.GetBlobClient(Guid.NewGuid() + Path.GetExtension(image.FileName));
-                    using (var stream = image.OpenReadStream())
+                    // Ensure Images folder exists
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "Images");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        await blobClient.UploadAsync(stream, overwrite: true);
+                        Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    venue.ImageUrl = blobClient.Uri.ToString();
+                    // Generate unique file name
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    // Save file to wwwroot/Images
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    // Save relative path to database
+                    venue.ImageUrl = "/Images/" + fileName;
                 }
 
                 _context.Update(venue);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            //}
             return View(venue);
         }
 
@@ -114,15 +173,23 @@ namespace EventEase.Controllers
             var venue = await _context.Venues.FindAsync(id);
             if (venue == null) return NotFound();
 
-            bool hasBookings = _context.Bookings.Any(b => b.VenueId == id);
-            if (hasBookings)
+            bool hasEvents = await _context.Events
+                .AnyAsync(e => e.VenueId == id);
+
+            bool hasBookings = await _context.Bookings
+                .AnyAsync(b => b.VenueId == id);
+
+            if (hasEvents || hasBookings)
             {
-                ModelState.AddModelError("", "Cannot delete venue with active bookings.");
-                return View(venue);
+                TempData["ErrorMessage"] =
+                    "Cannot delete this venue because it is linked to existing events or bookings.";
+                return RedirectToAction(nameof(Index));
             }
 
             _context.Venues.Remove(venue);
             await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Venue deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
     }

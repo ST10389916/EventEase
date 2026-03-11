@@ -17,7 +17,7 @@ namespace EventEase.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -30,10 +30,10 @@ namespace EventEase.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingId"));
 
-                    b.Property<DateTime>("BookingDate")
+                    b.Property<DateTime?>("BookingDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EventDate")
+                    b.Property<DateTime?>("EventDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("EventId")
@@ -115,32 +115,23 @@ namespace EventEase.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventId"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EventDate")
+                    b.Property<DateTime?>("EventDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EventTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EventTypeId1")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VenueId")
+                    b.Property<int>("VenueId")
                         .HasColumnType("int");
 
                     b.HasKey("EventId");
 
                     b.HasIndex("EventTypeId");
-
-                    b.HasIndex("EventTypeId1");
 
                     b.HasIndex("VenueId");
 
@@ -156,7 +147,6 @@ namespace EventEase.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventTypeId"));
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EventTypeId");
@@ -172,25 +162,20 @@ namespace EventEase.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VenueId"));
 
-                    b.Property<int>("Capacity")
+                    b.Property<int?>("Capacity")
                         .HasColumnType("int");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
                     b.Property<string>("Location")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VenueName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("VenueId");
 
@@ -200,9 +185,9 @@ namespace EventEase.Migrations
             modelBuilder.Entity("EventEase.Models.Booking", b =>
                 {
                     b.HasOne("EventEase.Models.Event", "Event")
-                        .WithMany()
+                        .WithMany("Bookings")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EventEase.Models.Venue", "Venue")
@@ -219,20 +204,25 @@ namespace EventEase.Migrations
             modelBuilder.Entity("EventEase.Models.Event", b =>
                 {
                     b.HasOne("EventEase.Models.EventType", "EventType")
-                        .WithMany()
+                        .WithMany("Events")
                         .HasForeignKey("EventTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EventEase.Models.EventType", null)
-                        .WithMany("Events")
-                        .HasForeignKey("EventTypeId1");
-
-                    b.HasOne("EventEase.Models.Venue", null)
-                        .WithMany("Events")
-                        .HasForeignKey("VenueId");
+                    b.HasOne("EventEase.Models.Venue", "Venue")
+                        .WithMany()
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("EventType");
+
+                    b.Navigation("Venue");
+                });
+
+            modelBuilder.Entity("EventEase.Models.Event", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 
             modelBuilder.Entity("EventEase.Models.EventType", b =>
@@ -243,8 +233,6 @@ namespace EventEase.Migrations
             modelBuilder.Entity("EventEase.Models.Venue", b =>
                 {
                     b.Navigation("Bookings");
-
-                    b.Navigation("Events");
                 });
 #pragma warning restore 612, 618
         }

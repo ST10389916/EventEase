@@ -5,26 +5,14 @@ namespace EventEase.Models
 {
     public class Event
     {
-        [Key]
         public int EventId { get; set; }
-
-        [Required]
-        [StringLength(150)]
-        public string EventName { get; set; }
-
-        [Required]
-        [StringLength(1000)]
-        public string Description { get; set; }
-
-        [Required]
-        [Display(Name = "Event Date")]
-        [DataType(DataType.Date)]
-        public DateTime EventDate { get; set; }
-
-        [Display(Name = "Event Type")]
         public int EventTypeId { get; set; }
-
-        [ForeignKey("EventTypeId")]
+        public int VenueId { get; set; }
+        public string? EventName { get; set; }
+        public string? Description { get; set; }
+        public DateTime? EventDate { get; set; }
         public EventType? EventType { get; set; }
+        public Venue? Venue { get; set; }
+        public ICollection<Booking>? Bookings { get; set; }
     }
 }

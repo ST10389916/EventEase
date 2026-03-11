@@ -27,12 +27,12 @@ namespace EventEase.Controllers
                         select new BookingDetailView
                         {
                             BookingId = b.BookingId,
-                            BookingDate = b.BookingDate,
-                            EventDate = b.EventDate,
+                            BookingDate = b.BookingDate.Value.Date,
+                            EventDate = b.EventDate.Value.Date,
                             VenueId = v.VenueId,
                             VenueName = v.VenueName,
                             Location = v.Location,
-                            Capacity = v.Capacity,
+                            Capacity = v.Capacity.Value,
                             ImageUrl = v.ImageUrl,
                             IsAvailable = v.IsAvailable,
                             EventId = e.EventId,

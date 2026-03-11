@@ -1,9 +1,8 @@
-﻿
+﻿using EventEase.Data;
+using EventEase.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using EventEase.Models;
-using EventEase.Data;
 
 namespace EventEaseWebApp.Controllers
 {
@@ -15,8 +14,20 @@ namespace EventEaseWebApp.Controllers
         {
             _context = context;
         }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
 
-        // GET: Booking
+            var booking = await _context.Bookings
+                .Include(b => b.Venue)
+                .FirstOrDefaultAsync(b => b.BookingId == id);
+
+            if (booking == null)
+                return NotFound();
+
+            return View(booking);
+        }
         public async Task<IActionResult> Index()
         {
             var bookings = _context.Bookings
@@ -25,20 +36,6 @@ namespace EventEaseWebApp.Controllers
             return View(await bookings.ToListAsync());
         }
 
-        public async Task<IActionResult> Details(int? id)
-{
-    if (id == null) return NotFound();
-
-    var booking = await _context.Bookings
-        .Include(b => b.Venue)
-        .Include(b => b.Event)
-            .ThenInclude(e => e.EventType)
-        .FirstOrDefaultAsync(m => m.BookingId == id);
-
-    if (booking == null) return NotFound();
-
-    return View(booking);
-}
         public IActionResult Create()
         {
             ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName");
@@ -50,19 +47,26 @@ namespace EventEaseWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Booking booking)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(booking);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName", booking.VenueId);
+                ViewData["EventId"] = new SelectList(_context.Events, "EventId", "EventName", booking.EventId);
+                return View(booking);
             }
 
-            // MUST repopulate dropdowns when validation fails
-            ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName", booking.VenueId);
-            ViewData["EventId"] = new SelectList(_context.Events, "EventId", "EventName", booking.EventId);
+            var _booking = await _context.Events
+                                .FirstOrDefaultAsync(b =>
+                                    b.VenueId == booking.VenueId);
 
-            return View(booking);
+            booking.EventDate = _booking?.EventDate;
+
+            _context.Add(booking);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Booking created successfully.";
+            return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -82,6 +86,10 @@ namespace EventEaseWebApp.Controllers
             if (id != booking.BookingId)
                 return NotFound();
 
+            var _booking = await _context.Events
+                                .FirstOrDefaultAsync(b => 
+                                    b.VenueId == booking.VenueId);
+
             if (!ModelState.IsValid)
             {
                 ViewData["VenueId"] = new SelectList(_context.Venues, "VenueId", "VenueName", booking.VenueId);
@@ -95,7 +103,7 @@ namespace EventEaseWebApp.Controllers
 
             // Update only allowed fields
             existingBooking.BookingDate = booking.BookingDate;
-            existingBooking.EventDate = booking.EventDate;
+            existingBooking.EventDate = _booking?.EventDate;
             existingBooking.VenueId = booking.VenueId;
             existingBooking.EventId = booking.EventId;
 
@@ -123,18 +131,22 @@ namespace EventEaseWebApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var booking = await _context.Bookings.FindAsync(id);
-            if (booking != null)
+            if (booking == null)
+                return NotFound();
+
+            // 🚫 Prevent deleting active/future bookings
+            if (booking.EventDate >= DateTime.Today)
             {
-                _context.Bookings.Remove(booking);
-                await _context.SaveChangesAsync();
+                TempData["ErrorMessage"] =
+                    "Cannot delete an active or upcoming booking.";
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
-        }
+            _context.Bookings.Remove(booking);
+            await _context.SaveChangesAsync();
 
-        private bool BookingExists(int id)
-        {
-            return _context.Bookings.Any(e => e.BookingId == id);
+            TempData["SuccessMessage"] = "Booking deleted successfully.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

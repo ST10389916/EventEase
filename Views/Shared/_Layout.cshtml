@@ -34,39 +34,46 @@
 
                 <a asp-controller="Home" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" 
-                                           && ViewContext.RouteData.Values["action"]?.ToString() == "Index"
-                                           ? "text-indigo-600"
-                                           : "text-gray-600 hover:text-indigo-600") transition">
+                                                              && ViewContext.RouteData.Values["action"]?.ToString() == "Index"
+                                                              ? "text-indigo-600"
+                                                              : "text-gray-600 hover:text-indigo-600") transition">
                     Home
                 </a>
 
                 <a asp-controller="Venue" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Venue"
-                                           ? "text-indigo-600"
-                                           : "text-gray-600 hover:text-indigo-600") transition">
+                                                              ? "text-indigo-600"
+                                                              : "text-gray-600 hover:text-indigo-600") transition">
                     Venues
-                </a>
-
-                <a asp-controller="Booking" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Booking"
-                                           ? "text-indigo-600"
-                                           : "text-gray-600 hover:text-indigo-600") transition">
-                    Bookings
                 </a>
 
                 <a asp-controller="Event" asp-action="Index"
                    class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Event"
-                                           ? "text-indigo-600"
-                                           : "text-gray-600 hover:text-indigo-600") transition">
+                                                              ? "text-indigo-600"
+                                                              : "text-gray-600 hover:text-indigo-600") transition">
                     Events
+                </a>
+
+                <a asp-controller="Booking" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Booking"
+                                                                                 ? "text-indigo-600"
+                                                                                 : "text-gray-600 hover:text-indigo-600") transition">
+                    Bookings
                 </a>
 
                 <a asp-controller="Home" asp-action="Privacy"
                    class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Privacy"
-                                           ? "text-indigo-600"
-                                           : "text-gray-600 hover:text-indigo-600") transition">
+                                                              ? "text-indigo-600"
+                                                              : "text-gray-600 hover:text-indigo-600") transition">
                     Privacy
                 </a>
+
+                @*       <a asp-controller="BookingDetail" asp-action="Index"
+                   class="@(ViewContext.RouteData.Values["action"]?.ToString() == "BookingDetail"
+                                                              ? "text-indigo-600"
+                                                              : "text-gray-600 hover:text-indigo-600") transition">
+                    Booking Detail
+                </a> *@
 
             </nav>
         </div>
@@ -74,9 +81,26 @@
 
     <!-- Page Content -->
     <main class="flex-grow max-w-7xl mx-auto px-6 py-10 w-full">
+
+        <!-- 🔥 GLOBAL ALERT MESSAGE -->
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="mb-6 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl shadow">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="mb-6 bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-xl shadow">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
         <div class="bg-white shadow-lg rounded-2xl p-8">
             @RenderBody()
         </div>
+
     </main>
 
     <!-- Footer -->

@@ -68,11 +68,11 @@
                             </td>
 
                             <td class="px-6 py-4 text-sm text-gray-600">
-                                @booking.BookingDate.ToShortDateString()
+                                @booking.BookingDate?.Date.ToShortDateString()
                             </td>
 
                             <td class="px-6 py-4 text-sm text-gray-600">
-                                @booking.EventDate.ToShortDateString()
+                                @booking.EventDate?.Date.ToShortDateString()
                             </td>
 
                             <!-- Action Buttons -->

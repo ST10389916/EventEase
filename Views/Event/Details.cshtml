@@ -13,7 +13,10 @@
         </h1>
 
         <div class="space-y-4 text-gray-700">
-
+            <div>
+                <p class="text-sm text-gray-500 font-medium">Venue</p>
+                <p class="mt-1">@Model.Venue?.VenueName</p>
+            </div>
             <div>
                 <p class="text-sm text-gray-500 font-medium">Description</p>
                 <p class="mt-1">@Model.Description</p>
@@ -21,7 +24,7 @@
 
             <div>
                 <p class="text-sm text-gray-500 font-medium">Date</p>
-                <p class="mt-1">@Model.EventDate.ToShortDateString()</p>
+                <p class="mt-1">@Model.EventDate.Value.ToShortDateString()</p>
             </div>
 
             <div>
