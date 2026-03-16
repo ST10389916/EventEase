@@ -1,0 +1,37 @@
+﻿@model EventEase.Models.ViewModels.RegisterViewModel
+
+<section class="max-w-md mx-auto py-16">
+
+    <h2 class="text-3xl font-bold mb-6 text-center">
+        Create Account
+    </h2>
+
+    <form asp-action="Register" method="post" class="space-y-4">
+
+        <input asp-for="FullName"
+               placeholder="Full Name"
+               class="w-full border rounded-lg p-3" />
+
+        <input asp-for="Email"
+               placeholder="Email"
+               class="w-full border rounded-lg p-3" />
+
+        <input asp-for="Password"
+               placeholder="Password"
+               type="password"
+               class="w-full border rounded-lg p-3" />
+
+        <button class="w-full bg-blue-600 text-white p-3 rounded-lg">
+            Register
+        </button>
+
+    </form>
+
+    <p class="text-center mt-4">
+        Already have an account?
+        <a asp-action="Login" class="text-blue-600">
+            Login
+        </a>
+    </p>
+
+</section>

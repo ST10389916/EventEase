@@ -1,43 +1,65 @@
-
 using Azure.Storage.Blobs;
 using EventEase.Data;
 using EventEaseWebApp.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System.Data.SQLite;
 using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("vault")!);
-//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+// Azure KeyVault (optional)
+//// var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("vault")!);
+//// builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
 
-// Add services to the container.
+// Add MVC
 builder.Services.AddControllersWithViews();
 
-//BlobServiceClient
+// Blob Service
 builder.Services.AddSingleton<BlobService>();
 
-
+// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// SESSION SUPPORT
+builder.Services.AddSession();
+
+// REQUIRED for Layout Session Access
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// -----------------------------
+// HTTP PIPELINE
+// -----------------------------
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
+app.UseStaticFiles();
+
 app.UseRouting();
+
+// SESSION must be after routing
+app.UseSession();
+
 app.UseAuthorization();
 
-app.MapStaticAssets();
+
+// -----------------------------
+// ROUTING
+// -----------------------------
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=BookingDetail}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Account}/{action=Login}/{id?}");
+
+
+// -----------------------------
+// DATABASE INITIALIZATION
+// -----------------------------
 
 using (var scope = app.Services.CreateScope())
 {

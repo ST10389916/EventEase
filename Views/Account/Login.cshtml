@@ -1,0 +1,26 @@
+﻿@model EventEase.Models.ViewModels.LoginViewModel
+
+<section class="max-w-md mx-auto py-16">
+
+    <h2 class="text-3xl font-bold mb-6 text-center">
+        Login
+    </h2>
+
+    <form asp-action="Login" method="post" class="space-y-4">
+
+        <input asp-for="Email"
+               placeholder="Email"
+               class="w-full border rounded-lg p-3" />
+
+        <input asp-for="Password"
+               type="password"
+               placeholder="Password"
+               class="w-full border rounded-lg p-3" />
+
+        <button class="w-full bg-green-600 text-white p-3 rounded-lg">
+            Login
+        </button>
+
+    </form>
+
+</section>

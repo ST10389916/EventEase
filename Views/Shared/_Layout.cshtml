@@ -1,11 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userEmail = HttpContextAccessor.HttpContext.Session.GetString("UserEmail");
+    var userRole = HttpContextAccessor.HttpContext.Session.GetString("UserRole");
+}
+
+<!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-100">
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - EventEase</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Google Font -->
@@ -13,76 +21,86 @@
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+        font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
+
 <body class="h-full flex flex-col">
 
     <!-- Top Navigation -->
     <header class="bg-white shadow-md sticky top-0 z-50">
+
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
             <!-- Logo -->
             <a asp-controller="Home" asp-action="Index"
-               class="text-2xl font-bold text-gray-800 tracking-tight hover:text-indigo-600 transition">
+                   class="text-2xl font-bold text-gray-800 tracking-tight hover:text-indigo-600 transition">
                 EventEase
             </a>
 
             <!-- Navigation -->
             <nav class="flex items-center gap-8 text-sm font-medium">
 
-                <a asp-controller="Home" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" 
-                                                              && ViewContext.RouteData.Values["action"]?.ToString() == "Index"
-                                                              ? "text-indigo-600"
-                                                              : "text-gray-600 hover:text-indigo-600") transition">
-                    Home
-                </a>
+                @if (string.IsNullOrEmpty(userEmail))
+                {
+                    <a asp-controller="Account" asp-action="Login"
+                           class="text-gray-600 hover:text-indigo-600 transition">
+                        Login
+                    </a>
 
-                <a asp-controller="Venue" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Venue"
-                                                              ? "text-indigo-600"
-                                                              : "text-gray-600 hover:text-indigo-600") transition">
-                    Venues
-                </a>
+                    <a asp-controller="Account" asp-action="Register"
+                           class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                        Register
+                    </a>
+                    
+                    <a asp-controller="Home" asp-action="Privacy"
+                           class="text-gray-600 hover:text-indigo-600 transition">
+                        Privacy
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Home" asp-action="Index"
+                           class="text-gray-600 hover:text-indigo-600 transition">
+                        Home
+                    </a>
 
-                <a asp-controller="Event" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Event"
-                                                              ? "text-indigo-600"
-                                                              : "text-gray-600 hover:text-indigo-600") transition">
-                    Events
-                </a>
+                    <a asp-controller="Venue" asp-action="Index"
+                           class="text-gray-600 hover:text-indigo-600 transition">
+                        Venues
+                    </a>
 
-                <a asp-controller="Booking" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Booking"
-                                                                                 ? "text-indigo-600"
-                                                                                 : "text-gray-600 hover:text-indigo-600") transition">
-                    Bookings
-                </a>
+                    <a asp-controller="Event" asp-action="Index"
+                           class="text-gray-600 hover:text-indigo-600 transition">
+                        Events
+                    </a>
 
-                <a asp-controller="Home" asp-action="Privacy"
-                   class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Privacy"
-                                                              ? "text-indigo-600"
-                                                              : "text-gray-600 hover:text-indigo-600") transition">
-                    Privacy
-                </a>
+                    <a asp-controller="Booking" asp-action="Index"
+                           class="text-gray-600 hover:text-indigo-600 transition">
+                        Bookings
+                    </a>
 
-                @*       <a asp-controller="BookingDetail" asp-action="Index"
-                   class="@(ViewContext.RouteData.Values["action"]?.ToString() == "BookingDetail"
-                                                              ? "text-indigo-600"
-                                                              : "text-gray-600 hover:text-indigo-600") transition">
-                    Booking Detail
-                </a> *@
+                    <span class="text-gray-500">
+                        @userEmail
+                    </span>
+
+                    <a asp-controller="Account" asp-action="Logout"
+                           class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+                        Logout
+                    </a>
+                }
 
             </nav>
         </div>
+
     </header>
+
 
     <!-- Page Content -->
     <main class="flex-grow max-w-7xl mx-auto px-6 py-10 w-full">
 
-        <!-- 🔥 GLOBAL ALERT MESSAGE -->
+        <!-- GLOBAL ALERT MESSAGE -->
         @if (TempData["ErrorMessage"] != null)
         {
             <div class="mb-6 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl shadow">
@@ -103,12 +121,14 @@
 
     </main>
 
+
     <!-- Footer -->
     <footer class="bg-white border-t">
         <div class="max-w-7xl mx-auto px-6 py-6 text-center text-gray-500 text-sm">
             &copy; @DateTime.Now.Year - EventEase. All rights reserved.
         </div>
     </footer>
+
 
     @RenderSection("Scripts", required: false)
 
